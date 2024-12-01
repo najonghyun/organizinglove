@@ -1,0 +1,28 @@
+/* .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+} */
+
+.bottomsheetContainer {
+  position: fixed;
+  /* pointer-events: none; */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 250px);
+  transform: translateY(100%);
+  transition: transform 0.5s ease-out;
+  z-index: 1001;
+}
+.bottomsheetContainer.mid {
+  transform: translateY(calc(100% - 250px)); /* 중간 상태 */
+}
+
+.bottomsheetContainer.open {
+  transform: translateY(0%); /* 최상단 상태 */
+  /* background: rgba(255, 255, 255, 0.85); */
+}

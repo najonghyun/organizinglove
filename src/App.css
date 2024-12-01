@@ -1,0 +1,198 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  background-color: #ededed;
+}
+.startMessage {
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  align-content: center;
+  -webkit-align-content: center;
+  z-index: 1003;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 16.71%,
+    rgba(255, 255, 255, 0.85) 45.07%,
+    #fff 83.34%
+  );
+  pointer-events: none;
+  cursor: pointer;
+}
+.startMessageText {
+  font-family: "SM JGothic 10";
+  font-size: 1rem;
+  line-height: 16px; /* 100% */
+}
+.startMessageIcon {
+  font-size: 1.875rem;
+  padding-top: 15px;
+  font-family: "Proximanova Regular";
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.title {
+  z-index: 999;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #000;
+  font-size: 1.625rem;
+  font-family: "Proximanova Medium";
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 76.923% */
+  pointer-events: none;
+}
+.subtitle {
+  margin-top: 12px;
+  color: #000;
+  font-size: 1.1875rem;
+  font-family: "Proximanova Regular";
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+}
+.about {
+  z-index: 1002;
+  position: fixed;
+  right: 40px;
+  bottom: 40px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.container {
+  position: relative;
+  width: calc(1366px * 2);
+  height: calc(1024px * 2);
+  /* background-color: #e9e9e9; */
+}
+
+/* 원 */
+.circle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #000000;
+  /* transform: scale(0.5); */
+  cursor: pointer;
+  display: flex; /* 자식 요소 정렬용 */
+  align-items: center; /* 수직 정렬 */
+  justify-content: center; /* 수평 정렬 */
+}
+.circle::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: transparent; /* 투명도 유지 */
+  /* justify-content: center;
+  align-items: center;
+  align-self: center;
+  text-align: center; */
+  z-index: -1;
+}
+.circle:hover {
+  transform: scale(1.3); /* 클릭 범위 2배 */
+}
+.circle2 {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* 바텀 시트 */
+.bottomSheetPart01 {
+  z-index: 1002;
+  height: 250px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 42%,
+    rgba(255, 255, 255, 0.85) 64.5%,
+    rgba(255, 255, 255, 0.85) 100%
+  );
+}
+.bottomSheetPart02 {
+  z-index: 1002;
+  height: 100vh;
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+}
+.bottomSheetContent {
+  z-index: 1002;
+  position: absolute;
+  background: transparent;
+}
+.collected {
+  z-index: 1003;
+  position: absolute;
+  left: 40px;
+  color: #000000;
+  font-size: 1.25rem;
+  font-family: "Proximanova Regular";
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  cursor: pointer;
+}
+.bottomsheetBox {
+  display: flex;
+  align-items: end;
+  /* padding-bottom: 40px; */
+  padding-left: 226px;
+}
+.bottomsheetText {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.bottomsheetIcon {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #000000;
+  margin-right: 16px;
+}
+.bottomsheetImage {
+  max-width: 100%;
+  max-height: 100%;
+  margin-left: 48px;
+}
+
+/* 탑 시트 */
+.topsheetText01 {
+  color: #000000;
+  font-size: 1.25rem;
+  font-family: "SM JGothic 10";
+  font-weight: 500;
+  font-style: normal;
+  line-height: 30px;
+  text-align: center;
+  padding-top: 40px;
+}
+.topsheetText02 {
+  color: #000000;
+  font-size: 1rem;
+  font-family: "SM JGothic 10";
+  font-weight: 500;
+  font-style: normal;
+  line-height: 30px;
+  text-align: center;
+}
