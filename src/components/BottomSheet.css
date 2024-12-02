@@ -9,7 +9,7 @@
 
 .bottomsheetContainer {
   position: fixed;
-  /* pointer-events: none; */
+  pointer-events: none;
   bottom: 0;
   left: 0;
   width: 100%;
