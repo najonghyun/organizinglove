@@ -10,22 +10,28 @@ import { ReactComponent as OffHeart } from "./assets/offHeart.svg";
 import { ReactComponent as Arrow } from "./assets/→.svg";
 import { ReactComponent as Speaker } from "./assets/speaker.svg";
 import { ReactComponent as BGMSpeaker } from "./assets/bgmSpeaker.svg";
-
+import Loading from "./components/Loading";
 const App = () => {
+  const refreshPage = () => {
+    window.location.reload();
+  };
   const circleCount = 600; // 원 개수
-  const soundFiles = Array.from({ length: 14 }, (_, i) => `sound${i + 1}.mp3`);
-  const imageFiles = Array.from({ length: 14 }, (_, i) => `image${i + 1}.svg`);
-  const bgmFiles = ["bgm1.m4a", "bgm2.m4a"];
+  const imageFiles = Array.from({ length: 54 }, (_, i) => `image${i + 1}.svg`);
+  const soundFiles = Array.from({ length: 31 }, (_, i) => `sound${i + 1}.mp3`);
+  const bgmFiles = Array.from({ length: 5 }, (_, i) => `bgm${i + 1}.mp3`);
   const circlesRef = useRef(
-    Array.from({ length: circleCount }).map((_, i) => ({
-      id: i,
-      state: false,
-      left: Math.random() * (1366 * 2),
-      top: Math.random() * (1024 * 2),
-      image: `/images/${imageFiles[i % imageFiles.length]}`,
-      sound: `/sounds/${soundFiles[i % soundFiles.length]}`,
-      // audio: null,
-    }))
+    Array.from({ length: circleCount }).map((_, i) => {
+      const localIndex = i % 54;
+      return {
+        id: i,
+        state: false,
+        left: Math.random() * (1366 * 2),
+        top: Math.random() * (1024 * 2),
+        image: `/images/${imageFiles[localIndex]}`,
+        sound: localIndex < 31 ? `/sounds/${soundFiles[localIndex]}` : null,
+        // audio: null,
+      };
+    })
   );
   const circles = circlesRef.current;
   const [selected, setSelected] = useState([]);
@@ -83,10 +89,21 @@ const App = () => {
   };
 
   const [showMessage, setShowMessage] = useState(true); // 메시지 표시 여부
-  const [playBGM] = useSound("/sounds/bgm0.m4a", { loop: true }); // BGM 소리 설정
+  const [isReady, setIsReady] = useState(false);
+  const [playBGM] = useSound("/sounds/bgm0.mp3", {
+    loop: true,
+    onload: () => {
+      console.log("오디오 준비 완료");
+      setIsReady(true);
+    },
+  });
   const transformComponentRef = useRef(null);
   const handleInteraction = (e) => {
     e.preventDefault(); // 클릭 외 다른 이벤트 차단
+    if (!isReady) {
+      console.log("아직 안됐다 임마!");
+      return;
+    }
     setShowMessage(false); // 메시지 숨기기
     playBGM();
     if (transformComponentRef.current) {
@@ -98,7 +115,7 @@ const App = () => {
   };
 
   const handleReset = () => {
-    window.location.reload(); // 페이지 새로고침
+    refreshPage();
   };
 
   const scrollRef = useRef(null);
@@ -134,8 +151,32 @@ const App = () => {
     setTopOpen(!topOpen);
   };
 
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoverState, setHoverState] = useState({
+    isHovered: false,
+    hasSound: false,
+  });
   const [isBGMHovered, setIsBGMHovered] = useState(false);
+
+  // 10분 타이머 설정
+  useEffect(() => {
+    let timeoutId;
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        console.log("Refreshing the page...");
+        refreshPage();
+      }, 600000); // 10분 = 600,000ms
+    };
+    resetTimer();
+
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+    };
+  }, []);
 
   return (
     <div className="App" ref={scrollRef}>
@@ -188,7 +229,7 @@ const App = () => {
                     }}
                   >
                     <div className="bottomsheetText">
-                      <IconWithSound selected={s} setIsHovered={setIsHovered} />
+                      <IconWithSound selected={s} setHoverState={setHoverState} />
                       <div className="bottomsheetNumber">{s.id}</div>
                     </div>
                     <img className="bottomsheetImage" src={s.image} alt={`Selected ${s.id}`} />
@@ -205,7 +246,7 @@ const App = () => {
               이곳에서 당신이 생각하는 사랑의 소리를 찾아 오랫동안 헤매어주세요.
             </div>
             <div className="startMessageIcon" onClick={handleInteraction}>
-              <Arrow width="16px" height="12px" />
+              {isReady ? <Arrow width="16px" height="12px" /> : <Loading />}
             </div>
           </div>
         </div>
@@ -222,17 +263,23 @@ const App = () => {
         </div>
       </div>
       <div
-        className="collected"
+        className="organized"
         onClick={handleCollect}
         style={{
           bottom: bottomOpen ? "40px" : "-340px",
           transition: "bottom 0.5s ease",
         }}
       >
-        Collected
+        Organized
       </div>
       <div className="about" onClick={handleAbout}>
-        {isHovered ? <Speaker /> : isBGMHovered ? <BGMSpeaker /> : <Question />}
+        {hoverState.isHovered && hoverState.hasSound ? (
+          <Speaker />
+        ) : isBGMHovered ? (
+          <BGMSpeaker />
+        ) : (
+          <Question />
+        )}
       </div>
       <TransformWrapper
         ref={transformComponentRef}
@@ -241,14 +288,30 @@ const App = () => {
         maxScale={4.5}
         initialPositionX={-2732 / 2} // 초기 위치를 중앙으로 설정
         initialPositionY={-2048 / 2} // 초기 위치를 중앙으로 설정
-        // doubleClick={{ disabled: true }} // 더블 클릭 확대 비활성화
-        // wheel={{ disabled: false, step: 50 }} // 스크롤 줌 속도 조절
-        // panning={{ lockAxisX: false, lockAxisY: false }} // 드래그 방향 제한
+        doubleClick={{ disabled: true }} // 더블 클릭 확대 비활성화
+        // wheel={{ disabled: false, step: 500 }} // 스크롤 줌 속도 조절
         // alignmentAnimation={{
         //   duration: 200, // 드래그 종료 후 복귀 애니메이션 속도
         //   sizeX: 100,
         //   sizeY: 100,
         // }}
+        // animation={{
+        //   size: 300,
+        //   animationTime: 500,
+        //   animationType: "easeInOutQuad",
+        // }}
+        zoomAnimation={{
+          disabled: false,
+          size: 500,
+          animationTime: 300,
+          animationType: "easeInOutCubic",
+        }}
+        velocityAnimation={{
+          disabled: false,
+          sensitivity: 0.1,
+          animationTime: 300,
+          animationType: "easeOutQuint",
+        }}
       >
         {({ zoomOut, ...rest }) => (
           <TransformComponent>
@@ -273,10 +336,10 @@ const App = () => {
                     return (
                       <line
                         key={index}
-                        x1={circle.left + 5}
-                        y1={circle.top + 5}
-                        x2={nextCircle.left + 5}
-                        y2={nextCircle.top + 5}
+                        x1={circle.left + 6}
+                        y1={circle.top + 6}
+                        x2={nextCircle.left + 6}
+                        y2={nextCircle.top + 6}
                         stroke="black"
                         strokeWidth="1.3"
                       />
@@ -288,7 +351,7 @@ const App = () => {
                   key={circle.id}
                   circle={circle}
                   handleCircleClick={handleCircleClick}
-                  setIsHovered={setIsHovered}
+                  setHoverState={setHoverState}
                 />
               ))}
               {hearts.map((heart) => (
@@ -308,34 +371,57 @@ const App = () => {
 };
 
 // Circle 컴포넌트
-const Circle = ({ circle, handleCircleClick, setIsHovered }) => {
+const Circle = ({ circle, handleCircleClick, setHoverState }) => {
   const [play, { stop }] = useSound(circle.sound, { interrupt: true, loop: true });
+  const [hover, setHover] = useState(false);
 
   const handleMouseEnter = () => {
-    play(); // 소리 재생
-    setIsHovered(true);
+    if (circle.sound) {
+      play(); //소리 재생
+    } else {
+      setHover(true);
+    }
+    setHoverState({
+      isHovered: true,
+      hasSound: circle.sound !== null,
+    });
   };
 
   const handleMouseLeave = () => {
-    stop(); // 소리 정지
-    setIsHovered(false);
+    if (circle.sound) {
+      stop(); // 소리 정지
+    }
+    setHover(false);
+    setHoverState({
+      isHovered: false,
+      hasSound: false,
+    });
   };
 
   return (
     <div
-      className="circle"
+      className="circleBox"
       style={{
         position: "absolute",
         left: `${circle.left}px`,
         top: `${circle.top}px`,
       }}
-      onClick={() => {
-        handleCircleClick(circle.id);
-      }} // 클릭 시 상태 변경
-      onMouseEnter={handleMouseEnter} // 마우스 올릴 때 소리 재생
-      onMouseLeave={handleMouseLeave} // 마우스 나갈 때 소리 정지
     >
-      <div className="circle2" style={{ backgroundColor: circle.state ? "black" : "#e9e9e9" }} />
+      <div
+        className="circle"
+        onClick={() => {
+          handleCircleClick(circle.id);
+        }} // 클릭 시 상태 변경
+        onMouseEnter={handleMouseEnter} // 마우스 올릴 때 소리 재생
+        onMouseLeave={handleMouseLeave} // 마우스 나갈 때 소리 정지
+      >
+        <div className="circle2" style={{ backgroundColor: circle.state ? "black" : "#e9e9e9" }} />
+      </div>
+      {!circle.sound && hover ? (
+        <object className="circleHoverImage" data={circle.image}>
+          {" "}
+        </object>
+      ) : null}
     </div>
   );
 };
@@ -376,16 +462,26 @@ const Heart = ({ heart, handleHeartClick, setIsBGMHovered }) => {
 };
 
 // IconSound 컴포넌트
-const IconWithSound = ({ selected, setIsHovered }) => {
+const IconWithSound = ({ selected, setHoverState }) => {
   const [play, { stop }] = useSound(selected.sound, { interrupt: true, loop: true });
   const handleMouseEnter = () => {
-    play();
-    setIsHovered(true);
+    if (selected.sound) {
+      play();
+    }
+    setHoverState({
+      isHovered: true,
+      hasSound: selected.sound !== null,
+    });
   };
 
   const handleMouseLeave = () => {
-    stop();
-    setIsHovered(false);
+    if (selected.sound) {
+      stop();
+    }
+    setHoverState({
+      isHovered: false,
+      hasSound: false,
+    });
   };
 
   return (
