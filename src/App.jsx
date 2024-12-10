@@ -7,9 +7,12 @@ import useSound from "use-sound";
 import { ReactComponent as Question } from "./assets/question.svg";
 import { ReactComponent as OnHeart } from "./assets/onHeart.svg";
 import { ReactComponent as OffHeart } from "./assets/offHeart.svg";
-import { ReactComponent as Arrow } from "./assets/→.svg";
+import { ReactComponent as ArrowRight } from "./assets/arrowRight.svg";
 import { ReactComponent as Speaker } from "./assets/speaker.svg";
 import { ReactComponent as BGMSpeaker } from "./assets/bgmSpeaker.svg";
+import { ReactComponent as Play } from "./assets/play.svg";
+import { ReactComponent as Pause } from "./assets/pause.svg";
+import { ReactComponent as ArrowDown } from "./assets/arrowDown.svg";
 import Loading from "./components/Loading";
 const App = () => {
   const refreshPage = () => {
@@ -207,8 +210,8 @@ const App = () => {
           ref={contentRef}
           className="bottomSheetContent"
           style={{
-            top: collect ? "290px" : "0px",
-            height: "calc(100vh - 40px)",
+            top: collect ? "250px" : "0px",
+            height: "calc(100vh - 95px)",
             overflowY: collect ? "scroll" : "hidden",
             overflowX: "hidden",
             transition: "top 0.6s ease",
@@ -223,9 +226,16 @@ const App = () => {
                     className="bottomsheetBox"
                     key={index}
                     style={{
-                      height: collect ? "max-content" : "210px",
+                      height: !collect && index === 0 ? "210px" : "max-content",
+                      paddingTop: collect
+                        ? index === 0
+                          ? "40px"
+                          : "0px"
+                        : index !== 0
+                        ? "40px"
+                        : "0px",
                       paddingBottom:
-                        collect && index === array.length - 1 ? "40px" : collect ? "24px" : "40px",
+                        collect && index === array.length - 1 ? "0px" : collect ? "24px" : "0px",
                     }}
                   >
                     <div className="bottomsheetText">
@@ -246,7 +256,7 @@ const App = () => {
               이곳에서 당신이 생각하는 사랑의 소리를 찾아 오랫동안 헤매어주세요.
             </div>
             <div className="startMessageIcon" onClick={handleInteraction}>
-              {isReady ? <Arrow width="16px" height="12px" /> : <Loading />}
+              {isReady ? <ArrowRight width="16px" height="12px" /> : <Loading />}
             </div>
           </div>
         </div>
@@ -262,16 +272,20 @@ const App = () => {
           Pause and collect sounds that you feel are the sounds of love.
         </div>
       </div>
+
       <div
         className="organized"
         onClick={handleCollect}
         style={{
-          bottom: bottomOpen ? "40px" : "-340px",
+          bottom: bottomOpen && selected.length > 1 ? "40px" : "-340px",
           transition: "bottom 0.5s ease",
         }}
       >
-        Organized
+        <div className="organizedText">Organized</div>
+        <DelayedIcon collect={collect} selected={selected} />
       </div>
+
+      <Plays collect={collect} selected={selected} />
       <div className="about" onClick={handleAbout}>
         {hoverState.isHovered && hoverState.hasSound ? (
           <Speaker />
@@ -491,6 +505,123 @@ const IconWithSound = ({ selected, setHoverState }) => {
       onMouseLeave={handleMouseLeave} // 마우스 나갈 때 정지
     />
   );
+};
+
+const SoundPlayer = ({ sound, isPlaying, onEnd, registerStopFn }) => {
+  const [play, { stop }] = useSound(sound, {
+    onend: onEnd,
+  });
+  useEffect(() => {
+    if (registerStopFn) {
+      registerStopFn(stop); // 최신의 stop 함수를 외부로 전달
+    }
+  }, [stop, registerStopFn]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      play(); // 사운드 재생
+    } else {
+      stop(); // 사운드 정지
+    }
+  }, [isPlaying, play, stop]);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      stop();
+    }
+  }, [isPlaying, stop]);
+
+  return null; // 별도의 UI 없이 재생 관리
+};
+
+const Plays = ({ collect, selected }) => {
+  const [playableSounds, setPlayableSounds] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const soundsLengthRef = useRef(0); // 최신 길이 저장
+  const stopRefs = useRef({}); // SoundPlayer의 stop 함수를 저장
+
+  useEffect(() => {
+    const filteredSounds = selected.filter((item) => item.sound);
+    setPlayableSounds(filteredSounds);
+    soundsLengthRef.current = filteredSounds.length;
+    stopRefs.current = {};
+  }, [selected]);
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = prevIndex + 1;
+      if (nextIndex < soundsLengthRef.current) {
+        return nextIndex; // 다음 트랙으로 이동
+      } else {
+        setPlaying(false);
+        return -1; // 마지막 트랙 이후에는 재생 중지
+      }
+    });
+  };
+
+  // 재생 버튼 클릭 시 실행
+  const handlePlay = () => {
+    if (playableSounds.length > 0) {
+      setCurrentIndex(0); // 첫 번째 트랙부터 재생 시작
+      setPlaying(true);
+    }
+  };
+
+  const handleStop = () => {
+    console.log("중지 실행");
+    setPlaying(false);
+    setCurrentIndex(-1);
+    if (currentIndex !== -1 && stopRefs.current[currentIndex]) {
+      stopRefs.current[currentIndex](); // stop 함수 직접 호출
+    }
+  };
+
+  return (
+    <>
+      {playableSounds.map((item, index) => (
+        <SoundPlayer
+          key={index}
+          sound={item.sound}
+          isPlaying={index === currentIndex} // 현재 재생 중인 항목인지 확인
+          playing={playing}
+          onEnd={handleNext} // 현재 사운드 종료 시 다음으로 이동
+          registerStopFn={(stopFn) => (stopRefs.current[index] = stopFn)}
+        />
+      ))}
+      <div
+        className="play"
+        style={{
+          bottom: collect ? "40px" : "-340px",
+          transition: "bottom 0.5s ease",
+        }}
+        onClick={playing ? handleStop : handlePlay}
+      >
+        {playing ? <Pause /> : <Play />}
+        <div className="playText">{playing ? "stop" : "play"}</div>
+      </div>
+    </>
+  );
+};
+
+const DelayedIcon = ({ collect, selected }) => {
+  const [delayed, setDelayed] = useState(null);
+  const selectedRef = useRef(selected);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDelayed(collect ? <ArrowDown /> : selectedRef.current.length);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [collect]);
+
+  useEffect(() => {
+    selectedRef.current = selected;
+    setDelayed(selected.length);
+  }, [selected]);
+
+  return <div>{delayed}</div>;
 };
 
 export default App;
