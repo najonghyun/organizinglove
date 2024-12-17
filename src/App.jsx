@@ -13,7 +13,7 @@ import { ReactComponent as BGMSpeaker } from './assets/bgmSpeaker.svg';
 import { ReactComponent as Play } from './assets/play.svg';
 import { ReactComponent as Pause } from './assets/pause.svg';
 import { ReactComponent as ArrowDown } from './assets/arrowDown.svg';
-import { ReactComponent as ArrowTop } from './assets/arrowTop.svg';
+// import { ReactComponent as ArrowTop } from './assets/arrowTop.svg';
 import Loading from './components/Loading';
 
 const App = () => {
@@ -158,12 +158,30 @@ const App = () => {
     }
   };
 
-  const handleAbout = () => {
-    if (showMessage) {
+  const topRef = useRef(null);
+  const handleOpenAbout = (e) => {
+    e.stopPropagation();
+    if (showMessage || topOpen) {
       return;
     }
-    setTopOpen(!topOpen);
+    setTopOpen(true);
   };
+  useEffect(() => {
+    if (!topOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (event.target.classList.contains('about')) return;
+      if (topRef.current && !topRef.current.contains(event.target)) {
+        setTopOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside); // 마우스 클릭 감지
+    document.addEventListener('touchstart', handleClickOutside); // 모바일 터치 감지
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [topOpen, setTopOpen]);
 
   const [hoverState, setHoverState] = useState({
     isHovered: false,
@@ -194,18 +212,18 @@ const App = () => {
 
   return (
     <div className='App' ref={scrollRef}>
-      <TopSheet open={topOpen}>
+      <TopSheet open={topOpen} topRef={topRef}>
         <div style={{ height: '100vh' }}>
           <div className='topsheetText01'>
             소리 정리하기 — 사랑으로
             <div className='topsheetText02'>
               <br /> 엉킨 전선을 정리하듯 엉켜 떠다니는 ‘소리’도 정리할 수 있을까. <br /> 소리는
-              언제나 세상에 부유하고 있고, 이 공간은 그러한 세상과도 같은 공간입니다.
-              <br /> 다만, 이 공간은 사랑에서 비롯된 소리로 이루어진 세상입니다. 사랑이라는 <br />{' '}
-              카테고리 아래 수집된 것들의 집합으로, 수많은 사랑의 메시지가 조각이 되어
-              <br /> 부유하고 있습니다. 당신은 이 공간에서 부유하는 조각들을 찬찬히 듣고 보며
-              <br /> 사랑을 모을 수 있습니다. 당신이 생각하는 사랑에 가깝다면 멈추고 <br />{' '}
-              선택하고, 수집해 주세요. 부유하던 조각들은 당신을 통해 나열되고 정리되어
+              언제나 세상에 부유하고 있고, 이 공간은 사랑에서 비롯된 소리로
+              <br /> 이루어진 세상입니다. 사랑이라는 카테고리 아래 수집된 것들의 집합으로, <br />{' '}
+              수많은 사랑의 메시지가 조각이 되어 부유하고 있습니다.
+              <br /> 당신은 부유하는 조각들을 찬찬히 듣고 보며 사랑을 모을 수 있습니다.
+              <br /> 당신이 생각하는 사랑에 가깝다면 멈추어 선택하고, 수집해 주세요. <br /> 부유하던
+              조각들은 당신을 통해 나열되고 정리되어
               <br /> 당신만의 사랑의 소리로 생성됩니다. <br /> <br /> 이곳에서 당신이 생각하는
               사랑의 소리를 찾아 오랫동안 헤매어주세요.
             </div>
@@ -297,13 +315,13 @@ const App = () => {
       </div>
 
       <Plays collect={collect} selected={selected} />
-      <div className='about' onClick={handleAbout}>
+      <div className='about' onClick={handleOpenAbout}>
         {hoverState.isHovered && hoverState.hasSound ? (
           <Speaker />
         ) : isBGMHovered ? (
           <BGMSpeaker />
         ) : (
-          <AboutIcon about={topOpen} />
+          <AboutIcon topOpen={topOpen} />
         )}
       </div>
       <TransformWrapper
@@ -641,16 +659,19 @@ const OrganizedIcon = ({ collect, selected }) => {
   return <div>{delayed}</div>;
 };
 
-const AboutIcon = ({ about }) => {
-  const [delayed, setDelayed] = useState(about ? <ArrowTop /> : <Question />);
+const AboutIcon = ({ topOpen }) => {
+  const [delayed, setDelayed] = useState(topOpen ? null : <Question />);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDelayed(about ? <ArrowTop /> : <Question />);
-    }, 500);
+    const timeout = setTimeout(
+      () => {
+        setDelayed(topOpen ? null : <Question />);
+      },
+      topOpen ? 250 : 500
+    );
 
     return () => clearTimeout(timeout);
-  }, [about]);
+  }, [topOpen]);
 
   return <div>{delayed}</div>;
 };

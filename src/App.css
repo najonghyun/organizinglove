@@ -31,7 +31,7 @@
   text-align: -webkit-center;
 }
 .startMessageText {
-  font-family: "SM JGothic 10";
+  font-family: 'SM JGothic 10';
   font-size: 1rem;
   line-height: 16px;
 }
@@ -56,9 +56,7 @@
 .title {
   width: max-content;
   font-size: 1.625rem;
-  font-family: "Proximanova Medium";
-  font-style: normal;
-  font-weight: 500;
+  font-family: 'Lato Medium';
   line-height: 20px; /* 76.923% */
   cursor: pointer;
 }
@@ -66,9 +64,7 @@
 .subtitle {
   margin-top: 12px;
   font-size: 1.1875rem;
-  font-family: "Proximanova Regular";
-  font-style: normal;
-  font-weight: 400;
+  font-family: 'Lato Regular';
   line-height: 19px;
   cursor: none;
 }
@@ -176,7 +172,7 @@
   left: 40px;
   color: #000000;
   font-size: 1.25rem;
-  font-family: "Proximanova Regular";
+  font-family: 'Proximanova Regular';
   font-weight: 400;
   font-style: normal;
   line-height: 20px;
@@ -199,7 +195,7 @@
 .playText {
   padding-left: 16px;
   font-size: 1.25rem;
-  font-family: "Proximanova Regular";
+  font-family: 'Proximanova Regular';
   font-weight: 400;
   font-style: normal;
   line-height: 20px;
@@ -238,9 +234,7 @@
 .topsheetText01 {
   color: #000000;
   font-size: 1.25rem;
-  font-family: "SM JGothic 10";
-  font-weight: 500;
-  font-style: normal;
+  font-family: 'SM JGothic 10';
   line-height: 30px;
   text-align: center;
   padding-top: 40px;
@@ -248,9 +242,7 @@
 .topsheetText02 {
   color: #000000;
   font-size: 1rem;
-  font-family: "SM JGothic 10";
-  font-weight: 500;
-  font-style: normal;
+  font-family: 'SM JGothic 10';
   line-height: 30px;
   text-align: center;
 }

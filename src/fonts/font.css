@@ -1,14 +1,24 @@
 @font-face {
-  font-family: "Proximanova Regular";
-  src: url("./proximanova-regular.woff");
+  font-family: 'Proximanova Regular';
+  src: url('./proximanova-regular.woff');
 }
 
 @font-face {
-  font-family: "Proximanova Medium";
-  src: url("./proximanova-medium.otf");
+  font-family: 'Proximanova Medium';
+  src: url('./proximanova-medium.otf');
 }
 
 @font-face {
-  font-family: "SM JGothic 10";
-  src: url("./smjgothic10-regular.otf");
+  font-family: 'SM JGothic 10';
+  src: url('./smjgothic10-regular.otf');
+}
+
+@font-face {
+  font-family: 'Lato Medium';
+  src: url('./lato-medium.ttf');
+}
+
+@font-face {
+  font-family: 'Lato Regular';
+  src: url('./lato-regular.ttf');
 }
