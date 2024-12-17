@@ -21,20 +21,19 @@ const App = () => {
     window.location.reload();
   };
   const circleCount = 600; // 원 개수
-  const imageFiles = Array.from({ length: 54 }, (_, i) => `image${i + 1}.svg`);
-  const soundFiles = Array.from({ length: 31 }, (_, i) => `sound${i + 1}.mp3`);
+  const imageFiles = Array.from({ length: 54 }, (_, i) => `image${i + 1}.svg`); // <- 이미지 개수!!!
+  const soundFiles = Array.from({ length: 31 }, (_, i) => `sound${i + 1}.mp3`); // <- 사운드 개수!!!
   const bgmFiles = Array.from({ length: 5 }, (_, i) => `bgm${i + 1}.mp3`);
   const circlesRef = useRef(
     Array.from({ length: circleCount }).map((_, i) => {
-      const localIndex = i % 54;
+      const localIndex = i % 54; // <- 이미지 개수!!!
       return {
         id: i + 1,
         state: false,
         left: Math.random() * (1366 * 2),
         top: Math.random() * (1024 * 2),
         image: `/images/${imageFiles[localIndex]}`,
-        sound: localIndex < 31 ? `/sounds/${soundFiles[localIndex]}` : null,
-        // audio: null,
+        sound: localIndex < 31 ? `/sounds/${soundFiles[localIndex]}` : null, // <- 사운드 개수!!!
       };
     })
   );
