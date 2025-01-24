@@ -21,19 +21,19 @@ const App = () => {
     window.location.reload();
   };
   const circleCount = 600; // 원 개수
-  const imageFiles = Array.from({ length: 112 }, (_, i) => `image${i + 1}.svg`); // <- 이미지 개수!!!
-  const soundFiles = Array.from({ length: 74 }, (_, i) => `sound${i + 1}.mp3`); // <- 사운드 개수!!!
+  const imageFiles = Array.from({ length: 112 }, (_, i) => `image${i + 1}.svg`); // 이미지 개수
+  const soundFiles = Array.from({ length: 74 }, (_, i) => `sound${i + 1}.mp3`); // 사운드 개수
   const bgmFiles = Array.from({ length: 5 }, (_, i) => `bgm${i + 1}.mp3`);
   const circlesRef = useRef(
     Array.from({ length: circleCount }).map((_, i) => {
-      const localIndex = i % 112; // <- 이미지 개수!!!
+      const localIndex = i % 112;
       return {
         id: i + 1,
         state: false,
         left: Math.random() * (1366 * 2),
         top: Math.random() * (1024 * 2),
         image: `/images/${imageFiles[localIndex]}`,
-        sound: localIndex < 74 ? `/sounds/${soundFiles[localIndex]}` : null, // <- 사운드 개수!!!
+        sound: localIndex < 74 ? `/sounds/${soundFiles[localIndex]}` : null,
       };
     })
   );
@@ -44,23 +44,18 @@ const App = () => {
 
     circles.forEach((circle) => {
       if (circle.id === id) {
-        circle.state = !circle.state; // 클릭 상태 반전
+        circle.state = !circle.state; // 원 색상 반전
+        // 선택되지 않았을 때: BottomSheet open 및 선택된 에셋 selected 배열에 추가
+        if (!selected.some((item) => item.id === id)) {
+          if (selected.length === 0) setBottomOpen(true);
+          setSelected([...selected, circle]);
+          // 이미 선택되어 있을 때: BottomSheet closed 및 선택된 에셋 selected 배열에서 제거
+        } else {
+          if (selected.length < 2) setBottomOpen(false);
+          setSelected(selected.filter((item) => item.id !== id));
+        }
       }
     });
-
-    if (!selected.some((item) => item.id === id)) {
-      // 선택된 동그라미가 없다면 추가
-      setSelected([...selected, circles.find((circle) => circle.id === id)]);
-      if (selected.length === 0) {
-        setBottomOpen(true);
-      }
-    } else {
-      // 이미 선택된 동그라미라면 제거
-      setSelected(selected.filter((item) => item.id !== id));
-      if (selected.length < 2) {
-        setBottomOpen(false);
-      }
-    }
   };
 
   const heartsRef = useRef(
@@ -75,44 +70,34 @@ const App = () => {
   const hearts = heartsRef.current;
   const [heartSelected, setHeartSelected] = useState([]);
   const handleHeartClick = (id) => {
-    if (showMessage) {
-      return;
-    }
+    if (showMessage) return;
+
     hearts.forEach((heart) => {
       if (heart.id === id) {
-        heart.state = !heart.state;
+        heart.state = !heart.state; // 하트 색상 반전
+        if (!heartSelected.some((item) => item.id === id)) {
+          setHeartSelected([...heartSelected, heart]);
+        } else {
+          setHeartSelected(heartSelected.filter((item) => item.id !== id));
+        }
       }
     });
-    if (!heartSelected.some((item) => item.id === id)) {
-      setHeartSelected([...heartSelected, hearts.find((heart) => heart.id === id)]);
-    } else {
-      setHeartSelected(heartSelected.filter((item) => item.id !== id));
-    }
   };
 
-  const [showMessage, setShowMessage] = useState(true); // 메시지 표시 여부
+  const [showMessage, setShowMessage] = useState(true); // 시작 온보딩
   const [isReady, setIsReady] = useState(false);
   const [playBGM] = useSound('/sounds/bgm0.mp3', {
     loop: true,
     html5: true,
     onload: () => {
-      console.log('오디오 준비 완료');
+      // console.log('오디오 준비 완료');
       setIsReady(true);
     },
   });
-  // const playBGM = new Howl({
-  //   src: ['/sounds/bgm0.mp3'],
-  //   loop: true,
-  //   html5: true,
-  // });
-  // playBGM.once('load', () => {
-  //   console.log('오디오 준비 완료');
-  //   setIsReady(true);
-  // });
 
   const transformComponentRef = useRef(null);
   const handleInteraction = (e) => {
-    e.preventDefault(); // 클릭 외 다른 이벤트 차단
+    e.preventDefault();
     if (!isReady) {
       console.log('아직 안됐다 임마!');
       return;
