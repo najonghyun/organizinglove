@@ -40,7 +40,7 @@
   margin-top: 9px;
   padding: 10px;
   pointer-events: auto;
-  cursor: pointer;
+  cursor: url('/src/assets/offHeart.svg'), auto;
   height: 12px;
 }
 .titleBox {

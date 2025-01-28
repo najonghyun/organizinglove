@@ -13,13 +13,11 @@ import { ReactComponent as BGMSpeaker } from './assets/bgmSpeaker.svg';
 import { ReactComponent as Play } from './assets/play.svg';
 import { ReactComponent as Pause } from './assets/pause.svg';
 import { ReactComponent as ArrowDown } from './assets/arrowDown.svg';
-// import { ReactComponent as ArrowTop } from './assets/arrowTop.svg';
+import { refreshPage, useRefreshTimer } from './utils/refresh';
+import { useClickOutside } from './utils/clickOutside';
 import Loading from './components/Loading';
 
 const App = () => {
-  const refreshPage = () => {
-    window.location.reload();
-  };
   const circleCount = 600; // 원 개수
   const imageFiles = Array.from({ length: 112 }, (_, i) => `image${i + 1}.svg`); // 이미지 개수
   const soundFiles = Array.from({ length: 74 }, (_, i) => `sound${i + 1}.mp3`); // 사운드 개수
@@ -84,6 +82,7 @@ const App = () => {
     });
   };
 
+  // ------------------------------ 시작하는 부분 --------------------------------------
   const [showMessage, setShowMessage] = useState(true); // 시작 온보딩
   const [isReady, setIsReady] = useState(false);
   const [playBGM] = useSound('/sounds/bgm0.mp3', {
@@ -102,8 +101,9 @@ const App = () => {
       console.log('아직 안됐다 임마!');
       return;
     }
-    setShowMessage(false); // 메시지 숨기기
-    playBGM();
+    setShowMessage(false); // 시작 온보딩 숨기기
+    playBGM(); // bgm 스타트
+    // 메인 페이지 로드될 때 살짝 줌아웃 효과를 적용
     if (transformComponentRef.current) {
       const delay = 300;
       setTimeout(() => {
@@ -112,10 +112,13 @@ const App = () => {
     }
   };
 
+  // ----------------------------------------------------------------------------------
+
   const handleReset = () => {
     refreshPage();
   };
 
+  // ------------------------------ 스크롤 초기 가운데 위치하게 하기 --------------------------------------
   const scrollRef = useRef(null);
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -129,10 +132,10 @@ const App = () => {
       top: centerY,
     });
   }, []);
+  // ----------------------------------------------------------------------------------
 
   const [bottomOpen, setBottomOpen] = useState(false);
   const [collect, setCollect] = useState(false);
-  const [topOpen, setTopOpen] = useState(false);
 
   const contentRef = useRef(null);
   const handleOrganized = () => {
@@ -142,7 +145,9 @@ const App = () => {
     }
   };
 
+  // TopSheet 컴포넌트 제어
   const topRef = useRef(null);
+  const [topOpen, setTopOpen] = useState(false);
   const handleOpenAbout = (e) => {
     e.stopPropagation();
     if (showMessage || topOpen) {
@@ -150,49 +155,16 @@ const App = () => {
     }
     setTopOpen(true);
   };
-  useEffect(() => {
-    if (!topOpen) return;
+  useClickOutside(topOpen, setTopOpen, topRef, 'about'); // 외부 클릭 시 topsheet 닫힘
 
-    const handleClickOutside = (event) => {
-      if (event.target.classList.contains('about')) return;
-      if (topRef.current && !topRef.current.contains(event.target)) {
-        setTopOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside); // 마우스 클릭 감지
-    document.addEventListener('touchstart', handleClickOutside); // 모바일 터치 감지
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [topOpen, setTopOpen]);
-
+  // 현재 hover된 데이터
   const [hoverState, setHoverState] = useState({
     isHovered: false,
     hasSound: false,
   });
   const [isBGMHovered, setIsBGMHovered] = useState(false);
 
-  // 10분 타이머 설정
-  useEffect(() => {
-    let timeoutId;
-    const resetTimer = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        console.log('Refreshing the page...');
-        refreshPage();
-      }, 300000); // 1분 = 60,000ms
-    };
-    resetTimer();
-
-    window.addEventListener('mousemove', resetTimer);
-    window.addEventListener('keydown', resetTimer);
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('mousemove', resetTimer);
-      window.removeEventListener('keydown', resetTimer);
-    };
-  }, []);
+  useRefreshTimer(10); // 화면 refresh 타이머 (10분)
 
   return (
     <div className='App' ref={scrollRef}>
