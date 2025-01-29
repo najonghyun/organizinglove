@@ -1,0 +1,9 @@
+.about-box {
+  z-index: 1002;
+  position: fixed;
+  right: 35px;
+  bottom: 35px;
+  padding: 5px;
+  pointer-events: auto;
+  cursor: pointer;
+}

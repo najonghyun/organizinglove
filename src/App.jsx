@@ -1,27 +1,26 @@
-import React, { useRef, useState, useEffect } from 'react';
-import BottomSheet from './components/BottomSheet';
-import TopSheet from './components/TopSheet';
 import './App.css';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import React, { useRef, useState, useEffect } from 'react';
 import useSound from 'use-sound';
-import { ReactComponent as Question } from './assets/question.svg';
-import { ReactComponent as OnHeart } from './assets/onHeart.svg';
-import { ReactComponent as OffHeart } from './assets/offHeart.svg';
-import { ReactComponent as ArrowRight } from './assets/arrowRight.svg';
-import { ReactComponent as Speaker } from './assets/speaker.svg';
-import { ReactComponent as BGMSpeaker } from './assets/bgmSpeaker.svg';
-import { ReactComponent as Play } from './assets/play.svg';
-import { ReactComponent as Pause } from './assets/pause.svg';
-import { ReactComponent as ArrowDown } from './assets/arrowDown.svg';
+
+import Topsheet from './components/Topsheet';
+import Bottomsheet from './components/Bottomsheet';
+import Circle from './components/Circle';
+import Heart from './components/Heart';
+import Organized from './components/Organized';
+import About from './components/About';
+import Plays from './components/Plays';
+import StartMessage from './components/StartMessage';
+import ZoomWrapper from './components/zoom/ZoomWrapper';
 import { refreshPage, useRefreshTimer } from './utils/refresh';
 import { useClickOutside } from './utils/clickOutside';
-import Loading from './components/Loading';
 
 const App = () => {
   const circleCount = 600; // 원 개수
   const imageFiles = Array.from({ length: 112 }, (_, i) => `image${i + 1}.svg`); // 이미지 개수
   const soundFiles = Array.from({ length: 74 }, (_, i) => `sound${i + 1}.mp3`); // 사운드 개수
   const bgmFiles = Array.from({ length: 5 }, (_, i) => `bgm${i + 1}.mp3`);
+
+  // ----- circle 에셋 관련 변수 관리 -----
   const circlesRef = useRef(
     Array.from({ length: circleCount }).map((_, i) => {
       const localIndex = i % 112;
@@ -56,6 +55,7 @@ const App = () => {
     });
   };
 
+  // ----- heart(bgm) 에셋 관련 변수 관리 -----
   const heartsRef = useRef(
     Array.from({ length: 10 }).map((_, i) => ({
       id: i + 1,
@@ -82,7 +82,7 @@ const App = () => {
     });
   };
 
-  // ------------------------------ 시작하는 부분 --------------------------------------
+  // ----- StartMessage 온보딩 페이지 관련 변수 관리 -----
   const [showMessage, setShowMessage] = useState(true); // 시작 온보딩
   const [isReady, setIsReady] = useState(false);
   const [playBGM] = useSound('/sounds/bgm0.mp3', {
@@ -94,31 +94,25 @@ const App = () => {
     },
   });
 
-  const transformComponentRef = useRef(null);
-  const handleInteraction = (e) => {
+  const zoomContainerRef = useRef(null); // ZoomWrapper container 제어
+  const handleStartMessage = (e) => {
     e.preventDefault();
     if (!isReady) {
-      console.log('아직 안됐다 임마!');
+      console.log('not Ready!');
       return;
     }
     setShowMessage(false); // 시작 온보딩 숨기기
     playBGM(); // bgm 스타트
     // 메인 페이지 로드될 때 살짝 줌아웃 효과를 적용
-    if (transformComponentRef.current) {
+    if (zoomContainerRef.current) {
       const delay = 300;
       setTimeout(() => {
-        transformComponentRef.current.zoomOut(0.5, 750, 'easeOut');
+        zoomContainerRef.current.zoomOut(0.5, 750, 'easeOut');
       }, delay);
     }
   };
 
-  // ----------------------------------------------------------------------------------
-
-  const handleReset = () => {
-    refreshPage();
-  };
-
-  // ------------------------------ 스크롤 초기 가운데 위치하게 하기 --------------------------------------
+  // ----- 초기 scroll 가운데 위치 -----
   const scrollRef = useRef(null);
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -132,8 +126,8 @@ const App = () => {
       top: centerY,
     });
   }, []);
-  // ----------------------------------------------------------------------------------
 
+  // ----- Bottomsheet 컴포넌트 제어 -----
   const [bottomOpen, setBottomOpen] = useState(false);
   const [collect, setCollect] = useState(false);
 
@@ -145,10 +139,10 @@ const App = () => {
     }
   };
 
-  // TopSheet 컴포넌트 제어
+  // ----- Topsheet 컴포넌트 제어 -----
   const topRef = useRef(null);
   const [topOpen, setTopOpen] = useState(false);
-  const handleOpenAbout = (e) => {
+  const handleAbout = (e) => {
     e.stopPropagation();
     if (showMessage || topOpen) {
       return;
@@ -168,89 +162,21 @@ const App = () => {
 
   return (
     <div className='App' ref={scrollRef}>
-      <TopSheet open={topOpen} topRef={topRef}>
-        <div style={{ height: '100vh' }}>
-          <div className='topsheetText01'>
-            소리 정리하기 — 사랑으로
-            <div className='topsheetText02'>
-              <br /> 엉킨 전선을 정리하듯 엉켜 떠다니는 ‘소리’도 정리할 수 있을까. <br /> 소리는
-              언제나 세상에 부유하고 있고, 이 공간은 사랑에서 비롯된 소리로
-              <br /> 이루어진 세상입니다. 사랑이라는 카테고리 아래 수집된 것들의 집합으로, <br />{' '}
-              수많은 사랑의 메시지가 조각이 되어 부유하고 있습니다.
-              <br /> 당신은 부유하는 조각들을 찬찬히 듣고 보며 사랑을 모을 수 있습니다.
-              <br /> 당신이 생각하는 사랑에 가깝다면 멈추어 선택하고, 수집해 주세요. <br /> 부유하던
-              조각들은 당신을 통해 나열되고 정리되어
-              <br /> 당신만의 사랑의 소리로 생성됩니다. <br /> <br /> 이곳에서 당신이 생각하는
-              사랑의 소리를 찾아 오랫동안 헤매어주세요.
-            </div>
-          </div>
-        </div>
-      </TopSheet>
-      <BottomSheet open={bottomOpen} collect={collect}>
-        <div>
-          <div className='bottomSheetPart01' />
-          <div className='bottomSheetPart02' />
-        </div>
-        <div
-          ref={contentRef}
-          className='bottomSheetContent'
-          style={{
-            top: collect ? '250px' : '0px',
-            height: 'calc(100vh - 95px)',
-            overflowY: collect ? 'scroll' : 'hidden',
-            overflowX: 'hidden',
-            transition: 'top 0.6s ease',
-          }}
-        >
-          {selected.length > 0
-            ? selected
-                .slice()
-                .reverse()
-                .map((s, index, array) => (
-                  <div
-                    className='bottomsheetBox'
-                    key={index}
-                    style={{
-                      height: !collect && index === 0 ? '210px' : 'max-content',
-                      paddingTop: collect
-                        ? index === 0
-                          ? '40px'
-                          : '0px'
-                        : index !== 0
-                        ? '40px'
-                        : '0px',
-                      paddingBottom:
-                        collect && index === array.length - 1 ? '0px' : collect ? '24px' : '0px',
-                    }}
-                  >
-                    <div className='bottomsheetText'>
-                      <IconWithSound selected={s} setHoverState={setHoverState} />
-                      <div className='bottomsheetNumber'>{s.id}</div>
-                    </div>
-                    <img className='bottomsheetImage' src={s.image} alt={`Selected ${s.id}`} />
-                  </div>
-                ))
-            : ''}
-        </div>
-      </BottomSheet>
-      {/* 메시지 화면 */}
-      {showMessage && (
-        <div className='startMessage'>
-          <div className='startMessageBox'>
-            <div className='startMessageText'>
-              이곳에서 당신이 생각하는 사랑의 소리를 찾아 오랫동안 헤매어주세요.
-            </div>
-            <div className='startMessageIcon' onClick={handleInteraction}>
-              {isReady ? <ArrowRight width='16px' height='12px' /> : <Loading />}
-            </div>
-          </div>
-        </div>
-      )}
+      <Topsheet open={topOpen} containerRef={topRef} />
+      <Bottomsheet
+        open={bottomOpen}
+        contentRef={contentRef}
+        collect={collect}
+        selected={selected}
+        setHoverState={setHoverState}
+      />
+      {/* StartMessage 화면 (온보딩 페이지) */}
+      <StartMessage show={showMessage} isReady={isReady} handleStartMessage={handleStartMessage} />
       <div
         className='titleBox'
         style={{ top: collect ? '-100vh' : '40px', transition: 'top 0.5s ease' }}
       >
-        <div className='title' onClick={handleReset}>
+        <div className='title' onClick={refreshPage}>
           Organizing the Sound — with Love
         </div>
         <div className='subtitle'>
@@ -258,378 +184,73 @@ const App = () => {
         </div>
       </div>
 
-      <div
-        className='organized'
-        onClick={handleOrganized}
-        style={{
-          bottom: bottomOpen && selected.length > 1 ? '40px' : '-50px',
-          transition: 'bottom 0.6s ease',
-        }}
-      >
-        <div className='organizedText'>Organized</div>
-        <OrganizedIcon collect={collect} selected={selected} />
-      </div>
-
+      <Organized
+        open={bottomOpen}
+        handleOrganized={handleOrganized}
+        collect={collect}
+        selected={selected}
+      />
       <Plays collect={collect} selected={selected} />
-      <div className='about' onClick={handleOpenAbout}>
-        {hoverState.isHovered && hoverState.hasSound ? (
-          <Speaker />
-        ) : isBGMHovered ? (
-          <BGMSpeaker />
-        ) : (
-          <AboutIcon topOpen={topOpen} />
-        )}
-      </div>
-      <TransformWrapper
-        ref={transformComponentRef}
-        initialScale={2.2}
-        minScale={0.5}
-        maxScale={4.5}
-        initialPositionX={-2732 / 2} // 초기 위치를 중앙으로 설정
-        initialPositionY={-2048 / 2} // 초기 위치를 중앙으로 설정
-        doubleClick={{ disabled: true }} // 더블 클릭 확대 비활성화
-        // wheel={{ disabled: false, step: 500 }} // 스크롤 줌 속도 조절
-        // alignmentAnimation={{
-        //   duration: 200, // 드래그 종료 후 복귀 애니메이션 속도
-        //   sizeX: 100,
-        //   sizeY: 100,
-        // }}
-        // animation={{
-        //   size: 300,
-        //   animationTime: 500,
-        //   animationType: "easeInOutQuad",
-        // }}
-        zoomAnimation={{
-          disabled: false,
-          size: 500,
-          animationTime: 300,
-          animationType: 'easeInOutCubic',
-        }}
-        velocityAnimation={{
-          disabled: false,
-          sensitivity: 0.1,
-          animationTime: 300,
-          animationType: 'easeOutQuint',
-        }}
-      >
-        {({ zoomOut, ...rest }) => (
-          <TransformComponent>
-            <div className='container'>
-              {/* SVG 컨테이너 */}
-              <svg
-                width='100%'
-                height='100%'
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 1,
-                  pointerEvents: 'none',
-                }}
-              >
-                {/* 선택된 원을 연결하는 선 */}
-                {selected.length > 1 &&
-                  selected.map((circle, index) => {
-                    if (index === selected.length - 1) return null; // 마지막 원은 다음 원이 없으므로 제외
-                    const nextCircle = selected[index + 1];
-                    return (
-                      <line
-                        key={index}
-                        x1={circle.left + 6}
-                        y1={circle.top + 6}
-                        x2={nextCircle.left + 6}
-                        y2={nextCircle.top + 6}
-                        stroke='black'
-                        strokeWidth='1.3'
-                      />
-                    );
-                  })}
-              </svg>
-              {circles.map((circle) => (
-                <Circle
-                  key={circle.id}
-                  circle={circle}
-                  handleCircleClick={handleCircleClick}
-                  setHoverState={setHoverState}
-                  showMessage={showMessage}
-                />
-              ))}
-              {hearts.map((heart) => (
-                <Heart
-                  key={heart.id}
-                  heart={heart}
-                  handleHeartClick={handleHeartClick}
-                  setIsBGMHovered={setIsBGMHovered}
-                  showMessage={showMessage}
-                />
-              ))}
-            </div>
-          </TransformComponent>
-        )}
-      </TransformWrapper>
+      <About
+        open={topOpen}
+        handleAbout={handleAbout}
+        isBGMHovered={isBGMHovered}
+        hoverState={hoverState}
+      />
+      <ZoomWrapper containerRef={zoomContainerRef}>
+        <div className='container'>
+          {/* SVG 컨테이너 */}
+          <svg
+            width='100%'
+            height='100%'
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 1,
+              pointerEvents: 'none',
+            }}
+          >
+            {/* 선택된 원을 연결하는 선 */}
+            {selected.length > 1 &&
+              selected.map((circle, index) => {
+                if (index === selected.length - 1) return null; // 마지막 원은 다음 원이 없으므로 제외
+                const nextCircle = selected[index + 1];
+                return (
+                  <line
+                    key={index}
+                    x1={circle.left + 6}
+                    y1={circle.top + 6}
+                    x2={nextCircle.left + 6}
+                    y2={nextCircle.top + 6}
+                    stroke='black'
+                    strokeWidth='1.3'
+                  />
+                );
+              })}
+          </svg>
+          {circles.map((circle) => (
+            <Circle
+              key={circle.id}
+              circle={circle}
+              handleCircleClick={handleCircleClick}
+              setHoverState={setHoverState}
+              showMessage={showMessage}
+            />
+          ))}
+          {hearts.map((heart) => (
+            <Heart
+              key={heart.id}
+              heart={heart}
+              handleHeartClick={handleHeartClick}
+              setIsBGMHovered={setIsBGMHovered}
+              showMessage={showMessage}
+            />
+          ))}
+        </div>
+      </ZoomWrapper>
     </div>
   );
-};
-
-// Circle 컴포넌트
-const Circle = ({ circle, handleCircleClick, setHoverState, showMessage }) => {
-  const [play, { stop }] = useSound(circle.sound, { interrupt: true, loop: true });
-  const [hover, setHover] = useState(false);
-
-  const handleMouseEnter = () => {
-    if (showMessage) return;
-    if (circle.sound) {
-      play(); //소리 재생
-    } else {
-      setHover(true);
-    }
-    setHoverState({
-      isHovered: true,
-      hasSound: circle.sound !== null,
-    });
-  };
-
-  const handleMouseLeave = () => {
-    if (showMessage) return;
-    if (circle.sound) {
-      stop(); // 소리 정지
-    }
-    setHover(false);
-    setHoverState({
-      isHovered: false,
-      hasSound: false,
-    });
-  };
-
-  return (
-    <div
-      className='circleBox'
-      style={{
-        position: 'absolute',
-        left: `${circle.left}px`,
-        top: `${circle.top}px`,
-      }}
-    >
-      <div
-        className='circle'
-        onClick={() => {
-          handleCircleClick(circle.id);
-        }} // 클릭 시 상태 변경
-        onMouseEnter={handleMouseEnter} // 마우스 올릴 때 소리 재생
-        onMouseLeave={handleMouseLeave} // 마우스 나갈 때 소리 정지
-      >
-        <div className='circle2' style={{ backgroundColor: circle.state ? 'black' : '#e9e9e9' }} />
-      </div>
-      {!circle.sound && hover ? (
-        <object className='circleHoverImage' data={circle.image}>
-          {' '}
-        </object>
-      ) : null}
-    </div>
-  );
-};
-
-// Heart 컴포넌트
-const Heart = ({ heart, handleHeartClick, setIsBGMHovered, showMessage }) => {
-  const [play, { stop }] = useSound(heart.sound, { interrupt: true, loop: true });
-
-  const handleMouseEnter = () => {
-    if (showMessage) return;
-    play();
-    setIsBGMHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    if (showMessage) return;
-    if (!heart.state) {
-      stop();
-    }
-    setIsBGMHovered(false);
-  };
-
-  return (
-    <div
-      className='heart'
-      style={{
-        position: 'absolute',
-        left: `${heart.left}px`,
-        top: `${heart.top}px`,
-      }}
-      onClick={() => {
-        handleHeartClick(heart.id);
-      }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {heart.state ? <OnHeart className='heart2' /> : <OffHeart className='heart2' />}
-    </div>
-  );
-};
-
-// IconSound 컴포넌트
-const IconWithSound = ({ selected, setHoverState }) => {
-  const [play, { stop }] = useSound(selected.sound, { interrupt: true, loop: true });
-  const handleMouseEnter = () => {
-    if (selected.sound) {
-      play();
-    }
-    setHoverState({
-      isHovered: true,
-      hasSound: selected.sound !== null,
-    });
-  };
-
-  const handleMouseLeave = () => {
-    if (selected.sound) {
-      stop();
-    }
-    setHoverState({
-      isHovered: false,
-      hasSound: false,
-    });
-  };
-
-  return (
-    <div
-      className='bottomsheetIcon'
-      onMouseEnter={handleMouseEnter} // 마우스 올릴 때 재생
-      onMouseLeave={handleMouseLeave} // 마우스 나갈 때 정지
-    />
-  );
-};
-
-const SoundPlayer = ({ sound, isPlaying, onEnd, registerStopFn }) => {
-  const [play, { stop }] = useSound(sound, {
-    onend: onEnd,
-  });
-  useEffect(() => {
-    if (registerStopFn) {
-      registerStopFn(stop); // 최신의 stop 함수를 외부로 전달
-    }
-  }, [stop, registerStopFn]);
-
-  useEffect(() => {
-    if (isPlaying) {
-      play(); // 사운드 재생
-    } else {
-      stop(); // 사운드 정지
-    }
-  }, [isPlaying, play, stop]);
-
-  useEffect(() => {
-    if (!isPlaying) {
-      stop();
-    }
-  }, [isPlaying, stop]);
-
-  return null; // 별도의 UI 없이 재생 관리
-};
-
-const Plays = ({ collect, selected }) => {
-  const [playableSounds, setPlayableSounds] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [playing, setPlaying] = useState(false);
-  const soundsLengthRef = useRef(0); // 최신 길이 저장
-  const stopRefs = useRef({}); // SoundPlayer의 stop 함수를 저장
-
-  useEffect(() => {
-    const filteredSounds = selected.filter((item) => item.sound);
-    setPlayableSounds(filteredSounds);
-    soundsLengthRef.current = filteredSounds.length;
-    stopRefs.current = {};
-  }, [selected]);
-
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex + 1;
-      if (nextIndex < soundsLengthRef.current) {
-        return nextIndex; // 다음 트랙으로 이동
-      } else {
-        setPlaying(false);
-        return -1; // 마지막 트랙 이후에는 재생 중지
-      }
-    });
-  };
-
-  // 재생 버튼 클릭 시 실행
-  const handlePlay = () => {
-    if (playableSounds.length > 0) {
-      setCurrentIndex(0); // 첫 번째 트랙부터 재생 시작
-      setPlaying(true);
-    }
-  };
-
-  const handleStop = () => {
-    console.log('중지 실행');
-    setPlaying(false);
-    setCurrentIndex(-1);
-    if (currentIndex !== -1 && stopRefs.current[currentIndex]) {
-      stopRefs.current[currentIndex](); // stop 함수 직접 호출
-    }
-  };
-
-  return (
-    <>
-      {playableSounds.map((item, index) => (
-        <SoundPlayer
-          key={index}
-          sound={item.sound}
-          isPlaying={index === currentIndex} // 현재 재생 중인 항목인지 확인
-          playing={playing}
-          onEnd={handleNext} // 현재 사운드 종료 시 다음으로 이동
-          registerStopFn={(stopFn) => (stopRefs.current[index] = stopFn)}
-        />
-      ))}
-      <div
-        className='play'
-        style={{
-          bottom: collect ? '40px' : '-340px',
-          transition: 'bottom 0.5s ease',
-        }}
-        onClick={playing ? handleStop : handlePlay}
-      >
-        {playing ? <Pause /> : <Play />}
-        <div className='playText'>{playing ? 'stop' : 'play'}</div>
-      </div>
-    </>
-  );
-};
-
-const OrganizedIcon = ({ collect, selected }) => {
-  const [delayed, setDelayed] = useState(null);
-  const selectedRef = useRef(selected);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDelayed(collect ? <ArrowDown /> : selectedRef.current.length);
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [collect]);
-
-  useEffect(() => {
-    selectedRef.current = selected;
-    setDelayed(selected.length);
-  }, [selected]);
-
-  return <div>{delayed}</div>;
-};
-
-const AboutIcon = ({ topOpen }) => {
-  const [delayed, setDelayed] = useState(topOpen ? null : <Question />);
-
-  useEffect(() => {
-    const timeout = setTimeout(
-      () => {
-        setDelayed(topOpen ? null : <Question />);
-      },
-      topOpen ? 250 : 500
-    );
-
-    return () => clearTimeout(timeout);
-  }, [topOpen]);
-
-  return <div>{delayed}</div>;
 };
 
 export default App;

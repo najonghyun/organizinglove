@@ -1,22 +1,92 @@
-// import { useSpring, animated } from "react-spring";
-import "./BottomSheet.css";
+import './Bottomsheet.css';
+import useSound from 'use-sound';
 
-const BottomSheet = ({ children, open, collect }) => {
-  // const animation = useSpring({
-  //   transform: open
-  //     ? collect
-  //       ? "translateY(0%)" // 최상단 위치 (완전히 펼침)
-  //       : "translateY(250px)" // 250px만큼 화면 위로 올라감
-  //     : "translateY(100%)", // 완전히 숨김
-  // });
+const Bottomsheet = ({ open, contentRef, collect, selected, setHoverState }) => {
   return (
-    <>
-      {/* {open && <div className="overlay" onClick={handleBottomSheetChange} />} */}
-      <div className={`bottomsheetContainer ${open ? (collect ? "open" : "mid") : ""}`}>
-        {children}
+    <div className={`bottomsheet-container ${open ? (collect ? 'open' : 'mid') : ''}`}>
+      <div>
+        <div className='bottomsheet-background-01' />
+        <div className='bottomsheet-background-02' />
       </div>
-    </>
+      <div
+        ref={contentRef}
+        className='bottomsheet-content'
+        style={{
+          top: collect ? '250px' : '0px',
+          height: 'calc(100vh - 95px)',
+          overflowY: collect ? 'scroll' : 'hidden',
+          overflowX: 'hidden',
+          transition: 'top 0.6s ease',
+        }}
+      >
+        {selected.length > 0
+          ? selected
+              .slice()
+              .reverse()
+              .map((s, index, array) => (
+                <div
+                  className='bottomsheet-content-box'
+                  key={index}
+                  style={{
+                    height: !collect && index === 0 ? '210px' : 'max-content',
+                    paddingTop: collect
+                      ? index === 0
+                        ? '40px'
+                        : '0px'
+                      : index !== 0
+                      ? '40px'
+                      : '0px',
+                    paddingBottom:
+                      collect && index === array.length - 1 ? '0px' : collect ? '24px' : '0px',
+                  }}
+                >
+                  <div className='bottomsheet-content-box-text'>
+                    <IconWithSound selected={s} setHoverState={setHoverState} />
+                    <div className='bottomsheet-content-box-number'>{s.id}</div>
+                  </div>
+                  <img
+                    className='bottomsheet-content-box-image'
+                    src={s.image}
+                    alt={`Selected ${s.id}`}
+                  />
+                </div>
+              ))
+          : ''}
+      </div>
+    </div>
   );
 };
 
-export default BottomSheet;
+export default Bottomsheet;
+
+// hover시 sound가 들리는 IconWithSound 컴포넌트
+const IconWithSound = ({ selected, setHoverState }) => {
+  const [play, { stop }] = useSound(selected.sound, { interrupt: true, loop: true });
+  const handleMouseEnter = () => {
+    if (selected.sound) {
+      play();
+    }
+    setHoverState({
+      isHovered: true,
+      hasSound: selected.sound !== null,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (selected.sound) {
+      stop();
+    }
+    setHoverState({
+      isHovered: false,
+      hasSound: false,
+    });
+  };
+
+  return (
+    <div
+      className='bottomsheet-content-box-icon'
+      onMouseEnter={handleMouseEnter} // 마우스 올릴 때 재생
+      onMouseLeave={handleMouseLeave} // 마우스 나갈 때 정지
+    />
+  );
+};

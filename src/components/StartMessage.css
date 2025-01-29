@@ -1,0 +1,35 @@
+.start-message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  z-index: 1004;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 16.71%,
+    rgba(255, 255, 255, 0.85) 45.07%,
+    #fff 83.34%
+  );
+  pointer-events: none;
+}
+.start-message-box {
+  text-align: -webkit-center;
+}
+.start-message-box-text {
+  font-family: 'SM JGothic 10';
+  font-size: 1rem;
+  line-height: 16px;
+}
+.start-message-box-icon {
+  width: max-content;
+  margin-top: 9px;
+  padding: 10px;
+  pointer-events: auto;
+  cursor: url('/src/assets/offHeart.svg'), auto;
+  height: 12px;
+}
