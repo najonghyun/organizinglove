@@ -1,8 +1,8 @@
 import './About.css';
 import { useEffect, useState } from 'react';
-import { ReactComponent as Question } from '../assets/question.svg';
-import { ReactComponent as Speaker } from '../assets/speaker.svg';
-import { ReactComponent as BGMSpeaker } from '../assets/bgmSpeaker.svg';
+import { ReactComponent as Question } from '../../assets/question.svg';
+import { ReactComponent as Speaker } from '../../assets/speaker.svg';
+import { ReactComponent as BGMSpeaker } from '../../assets/bgmSpeaker.svg';
 
 const About = ({ open, handleAbout, isBGMHovered, hoverState }) => {
   return (

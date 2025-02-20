@@ -1,15 +1,16 @@
 import './App.css';
 import React, { useRef, useState, useEffect } from 'react';
 import useSound from 'use-sound';
+import startBGM from './assets/sounds/bgm0.mp3';
 
-import Topsheet from './components/Topsheet';
-import Bottomsheet from './components/Bottomsheet';
-import Circle from './components/Circle';
-import Heart from './components/Heart';
-import Organized from './components/Organized';
-import About from './components/About';
-import Plays from './components/Plays';
-import StartMessage from './components/StartMessage';
+import Topsheet from './components/sheet/Topsheet';
+import Bottomsheet from './components/sheet/Bottomsheet';
+import Circle from './components/items/Circle';
+import Heart from './components/items/Heart';
+import Organized from './components/menu/Organized';
+import About from './components/menu/About';
+import Plays from './components/items/Plays';
+import StartMessage from './components/etc/StartMessage';
 import ZoomWrapper from './components/zoom/ZoomWrapper';
 import { refreshPage, useRefreshTimer } from './utils/refresh';
 import { useClickOutside } from './utils/clickOutside';
@@ -29,8 +30,8 @@ const App = () => {
         state: false,
         left: Math.random() * (1366 * 2),
         top: Math.random() * (1024 * 2),
-        image: `/images/${imageFiles[localIndex]}`,
-        sound: localIndex < 74 ? `/sounds/${soundFiles[localIndex]}` : null,
+        image: require(`./assets/images/${imageFiles[localIndex]}`),
+        sound: localIndex < 74 ? require(`./assets/sounds/${soundFiles[localIndex]}`) : null,
       };
     })
   );
@@ -62,7 +63,7 @@ const App = () => {
       state: false,
       left: Math.random() * (1366 * 2),
       top: Math.random() * (1024 * 2),
-      sound: `/sounds/${bgmFiles[i % bgmFiles.length]}`,
+      sound: require(`./assets/sounds/${bgmFiles[i % bgmFiles.length]}`),
     }))
   );
   const hearts = heartsRef.current;
@@ -85,7 +86,7 @@ const App = () => {
   // ----- StartMessage 온보딩 페이지 관련 변수 관리 -----
   const [showMessage, setShowMessage] = useState(true); // 시작 온보딩
   const [isReady, setIsReady] = useState(false);
-  const [playBGM] = useSound('/sounds/bgm0.mp3', {
+  const [playBGM] = useSound(startBGM, {
     loop: true,
     html5: true,
     onload: () => {

@@ -1,8 +1,8 @@
 import './Plays.css';
 import { useEffect, useState, useRef } from 'react';
 import useSound from 'use-sound';
-import { ReactComponent as Play } from '../assets/play.svg';
-import { ReactComponent as Pause } from '../assets/pause.svg';
+import { ReactComponent as Play } from '../../assets/play.svg';
+import { ReactComponent as Pause } from '../../assets/pause.svg';
 
 const Plays = ({ collect, selected }) => {
   const [playableSounds, setPlayableSounds] = useState([]);

@@ -1,6 +1,6 @@
 import './StartMessage.css';
 import Loading from './Loading';
-import { ReactComponent as ArrowRight } from '../assets/arrowRight.svg';
+import { ReactComponent as ArrowRight } from '../../assets/arrowRight.svg';
 
 const StartMessage = ({ show, isReady, handleStartMessage }) => {
   return (
