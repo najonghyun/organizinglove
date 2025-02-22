@@ -30,6 +30,6 @@
   margin-top: 9px;
   padding: 10px;
   pointer-events: auto;
-  cursor: url('/src/assets/offHeart.svg'), auto;
+  cursor: url('/src/assets/icons/offHeart.svg'), auto;
   height: 12px;
 }

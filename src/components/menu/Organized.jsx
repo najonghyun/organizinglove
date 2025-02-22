@@ -1,6 +1,6 @@
 import './Organized.css';
 import { useEffect, useState, useRef } from 'react';
-import { ReactComponent as ArrowDown } from '../../assets/arrowDown.svg';
+import { ReactComponent as ArrowDown } from '../../assets/icons/arrowDown.svg';
 
 const Organized = ({ open, handleOrganized, collect, selected }) => {
   return (

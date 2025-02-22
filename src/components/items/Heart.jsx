@@ -1,7 +1,7 @@
 import './Heart.css';
 import useSound from 'use-sound';
-import { ReactComponent as OnHeart } from '../../assets/onHeart.svg';
-import { ReactComponent as OffHeart } from '../../assets/offHeart.svg';
+import { ReactComponent as OnHeart } from '../../assets/icons/onHeart.svg';
+import { ReactComponent as OffHeart } from '../../assets/icons/offHeart.svg';
 
 const Heart = ({ heart, handleHeartClick, setIsBGMHovered, showMessage }) => {
   const [play, { stop }] = useSound(heart.sound, { interrupt: true, loop: true });
