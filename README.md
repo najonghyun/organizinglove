@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# <img src="https://github.com/user-attachments/assets/9529d2ac-46a6-4fbc-9c07-fe3eee16e5a7" width="70%" height="70%">🚥 Organizing Love
-=======
 # <img src="https://github.com/user-attachments/assets/233351e4-3444-40fb-9d4c-4781a60d79b2" width="27px" height="27px"> Organizing Love
->>>>>>> a423d427c057b116419054fa055fbfb7bfcc1fe9
 
 ---
 
