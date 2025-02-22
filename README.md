@@ -1,4 +1,4 @@
-# 🚥 Organizing Love
+# <img src="https://github.com/user-attachments/assets/233351e4-3444-40fb-9d4c-4781a60d79b2" width="27px" height="27px"> Organizing Love
 
 ---
 
