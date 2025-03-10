@@ -18,7 +18,7 @@
 
 #### Home
 
-<img src="/src/assets/screenshoㄹts/홈.png" width="100%" height="100%">
+<img src="/src/assets/screenshots/홈.png" width="100%" height="100%">
 
 <br>
 
