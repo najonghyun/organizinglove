@@ -1,30 +1,59 @@
-# <img src="https://github.com/user-attachments/assets/233351e4-3444-40fb-9d4c-4781a60d79b2" width="27px" height="27px"> Organizing Love
-
----
-
-### 소리정리하기 - 사랑으로 (이 웹사이트는 외부 의뢰를 받아 진행한 개인 프로젝트 입니다)
-
-### 웹 방문 : https://www.organizinglove.site/
+<img src="https://github.com/user-attachments/assets/233351e4-3444-40fb-9d4c-4781a60d79b2" width="25px" height="20px"> &nbsp;&nbsp;<span style="font-size: 2em; font-weight: bold;">Organizing the Sound — with Love</span>
 
 ---
 
 <br>
 
-## 💻 화면 미리보기
+<span style="font-size: 1em; font-weight: bold;">사랑의 메시지를 수집하고 정리하여 사용자만의 '사랑의 소리'를 생성할 수 있는 <br/>감성 기반 인터랙티브 웹 프로젝트입니다.</span>
 
-### 시작 화면
+### https://www.organizinglove.site/
 
-<img src="https://github.com/user-attachments/assets/9529d2ac-46a6-4fbc-9c07-fe3eee16e5a7" width="70%" height="70%">
+<br>
 
-### 메인 화면
+---
 
-<img src="https://github.com/user-attachments/assets/f15d4fed-4df9-494b-b7ca-72eaf93ad86a" width="70%" height="70%">
+### 웹 / 개인 프로젝트 (외주)
 
-### organized
+### 2024.11.25 ~ 2024.12.17
+
+> <span style="font-size: 1em; font-weight: bold;">인터랙션 기반 요소 제어 및 사운드 재생 기능을 포함한 레이아웃 구현과 기능 개발을 담당</span>
+
+<br>
+
+---
+
+<span style="font-size: 1.5em; font-weight: bold;">💻 Overview</span>
+
+###
+
+<table>
+  <tr>
+    <td align="center"><b>Home</b></td>
+    <td align="center"><b>Main</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="/src/assets/screenshots/시작화면.png" width="70%" height="70%"></td>
+    <td align="center"><img src="/src/assets/screenshots/메인화면_01.png" width="70%" height="70%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Organized</b></td>
+    <td align="center"><b>About</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="/src/assets/screenshots/organized_01.png" width="70%" height="70%"></td>
+    <td align="center"><img src="/src/assets/screenshots/도움말.png" width="70%" height="70%"></td>
+  </tr>
+</table>
+
+### Home
+
+### Main
+
+### Organized
 
 <img src="https://github.com/user-attachments/assets/1a4679e6-1657-4cf4-9977-9389342931fd" width="70%" height="70%">
 
-### 도움말
+### About
 
 <img src="https://github.com/user-attachments/assets/9a29ef88-dd66-415d-b305-72b62f627bdf" width="70%" height="70%">
 
@@ -32,10 +61,6 @@
 <br>
 
 ---
-
-### 📅 진행 기간
-
-2024.11.25 ~ 2024.12.17
 
 ### 💡 기획
 
